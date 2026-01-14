@@ -2,110 +2,229 @@ import QtQuick
 import QtQuick.Controls 2.15
 
 Window {
-    width: 720
-    height: 1280
+    id: root
+    width: 360
+    height:640
+    minimumWidth: 300
+    minimumHeight: 400
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("QuickJob")
+    color: "#0d1919"
+    // Główne tło aplikacji
 
-    Rectangle
-    {
-        id:background
-        color: "#344e41"
-        height: parent.height
-        width: parent.width
 
-        TextField
-        {
-            id:searchField
-            height:60
-            width:parent.width-200
-            color:"gray"
-            placeholderText: "Wyszukaj nazwę"
-            anchors.left: parent.left
-            anchors.leftMargin: 40
-            anchors.top:parent.top
-            anchors.topMargin: 40
-            font.pixelSize: 20
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
+    // Kontener, który zarządza skalowaniem
+    Item {
+        id: mainContainer
+        anchors.fill: parent
 
-        Rectangle
-        {
-            id:notifications
-            height:60
-            width:60
-            color: "#a7c957"
-            anchors.left: searchField.right
-            anchors.top: parent.top
-            anchors.leftMargin: 65
-            anchors.topMargin: 40
-        }
+        // Właściwości pomocnicze do obliczeń
+        readonly property real baseWidth: 360
+        readonly property real baseHeight: 640
 
-        Rectangle
-        {
-            id:categories
-            height:400
-            width:background.width
-            color:"#6a994e"
-            anchors.left: background.left
-            anchors.top: searchField.bottom
-            anchors.topMargin: 180
-        }
+        // Obliczamy skalę tak, aby UI zawsze mieściło się w oknie (proporcja "contain")
+        readonly property real scaleFactor: Math.min(
+            mainContainer.width / baseWidth,
+            mainContainer.height / baseHeight
+        )
 
-        Rectangle
-        {
-            id:bottomButtons
-            color:"gray"
-            height:60
-            width:parent.width
-            anchors.bottom: parent.bottom
+        // BAZOWY PROJEKT UI
+        Item {
+            id: base
+            width: mainContainer.baseWidth
+            height: mainContainer.baseHeight
+            anchors.centerIn: parent
 
-            Button
-            {
-                id:homeButton
-                height:parent.height
-                width:parent.width/4
+            // To jest klucz do poprawnego skalowania bez przesuwania elementów
+            scale: mainContainer.scaleFactor
+
+            Rectangle {
+                id: background
+                anchors.fill: parent
+                color:"#0d1919"
+
+                // --- GÓRNY PASEK (Wyszukiwarka + Notyfikacje) ---
+
+
                 Rectangle
                 {
-                    id:homeButtonRect
-                    height: parent.height
+                    id:searchBackground
+                    height:65
                     width:parent.width
-                    radius:10
-                    color:"red"
-                }
-            }
+                    color:"#142424"
 
-            Button
-            {
-                id:favoriteButton
-                height:parent.height
-                width:parent.width/4
-                anchors.left: homeButton.right
-                background: Rectangle
-                {
-                    id:favoriteButtonRect
-                    height: parent.height
-                    width:parent.width
-                    radius:10
-                    color:"blue"
+                    TextField {
+                        id: searchField
+                        height: 40
+                        width: parent.width * 0.8
+                        color:"#8C9A9D"
+                        placeholderText: "Wyszukaj nazwę"
+                        placeholderTextColor: "#8C9A9D"
+                        anchors.left: parent.left
+                        anchors.leftMargin: 9
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: 13
+                        verticalAlignment: Text.AlignVCenter
+
+                        background: Rectangle
+                        {
+                            anchors.fill:parent
+                            color:"#0d1919"
+                        }
+                    }
+
+                    Rectangle {
+                        id: notifications
+                        height: 40
+                        width: 40
+                        color: "#142424"
+                        anchors.left: searchField.right
+                        anchors.leftMargin: 10
+                        anchors.verticalCenter: searchBackground.verticalCenter
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🔔"
+                            font.pixelSize: 25
+                        }
+                    }
                 }
-            }
-            Button
-            {
-                id:addButton
-                height:parent.height
-                width:parent.width/10
-                anchors.left: favoriteButton.right
-                background: Rectangle
-                {
-                    id:addButtonRect
-                    height: parent.height
-                    width:parent.width
-                    radius:width/2
-                    color:"yellow"
+
+
+
+                // --- ŚRODEK (Kategorie) ---
+
+                Rectangle {
+                    id: categories
+                    height: 200
+                    width: parent.width
+                    anchors.top: searchBackground.bottom
+                    anchors.left: parent.left
+                    color:"#0d1919"
+
+                    Text {
+                        text: "Przeglądaj kategorie"
+                        color: "white"
+                        font.pixelSize: 21
+                        font.bold: true
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.topMargin: 10
+                        anchors.leftMargin: 9
+
+                    }
+                }
+
+                // --- DOLNY PASEK PRZYCISKÓW ---
+                Rectangle {
+                    id: bottomBar
+                    height: 50
+                    width: parent.width
+                    color: "#142424"
+                    anchors.bottom: parent.bottom
+
+                    Row {
+                        anchors.fill: parent
+
+                            Button {
+                                id:homeButton
+                                width: parent.width / 5
+                                height: parent.height
+                                background: Rectangle
+                                {
+                                    radius:10
+                                    color:bottomBar.color
+                                    Text
+                                    {
+                                        id:homeText
+                                        text:"Szukaj"
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.bottom: parent.bottom
+                                        anchors.bottomMargin: 5
+                                        color:"gray"
+                                    }
+                                }
+                            }
+                            Button {
+                                id:favoriteButton
+                                width: parent.width / 5
+                                height: parent.height
+                                background: Rectangle
+                                {
+                                    radius:10
+                                    color:bottomBar.color
+                                    Text
+                                    {
+                                        id:favoriteText
+                                        text:"Ulubione"
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.bottom: parent.bottom
+                                        anchors.bottomMargin: 5
+                                        color:"gray"
+                                    }
+                                }
+                            }
+                            Button {
+                                id:addButton
+                                width: parent.width / 5
+                                height: parent.height
+                                background: Rectangle
+                                {
+                                    radius:10
+                                    color:bottomBar.color
+                                    Text
+                                    {
+                                        id:addText
+                                        text:"+"
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        color:"gray"
+                                    }
+                                }
+                            }
+                            Button {
+                                id:chatButton
+                                width: parent.width / 5
+                                height: parent.height
+                                background: Rectangle
+                                {
+                                    radius:10
+                                    color:bottomBar.color
+                                    Text
+                                    {
+                                        id:chatText
+                                        text:"Czat"
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.bottom: parent.bottom
+                                        anchors.bottomMargin: 5
+                                        color:"gray"
+                                    }
+                                }
+                            }
+                            Button {
+                                id:accountButton
+                                width: parent.width / 5
+                                height: parent.height
+
+                                background: Rectangle
+                                {
+                                    radius:10
+                                    color:bottomBar.color
+                                    Text
+                                    {
+                                        id:accountText
+                                        text:"Konto"
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        anchors.bottom: parent.bottom
+                                        anchors.bottomMargin: 5
+                                        color:"gray"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-}
+
