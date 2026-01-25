@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls 2.15
+import QtQuick.Dialogs
 
 Item {
 ScrollView
@@ -23,7 +24,7 @@ Item
 {
     id:contentLayout
     width:scrollView.availableWidth
-    height:1000
+    height:1060
     Text {
         id: titleText
         text: qsTr("Tytuł ogłoszenia")
@@ -31,7 +32,7 @@ Item
         font.pixelSize: 14
         anchors.left: parent.left
         anchors.top:parent.top
-        anchors.topMargin: 200
+        anchors.topMargin: 220
         anchors.leftMargin: 20
     }
     //========================= IMAGE ===================================
@@ -45,14 +46,84 @@ Text
     anchors.top:parent
     anchors.topMargin: 10
 }
+Text
+{
+    id:pathText
+    text:imageButton.selectedImagePath.toString().split("/").pop()
+    color:"white"
+    font.pointSize: 10
+    font.underline: textMA.containsMouse
+    anchors.top: imageButton.bottom
+    anchors.topMargin: 5
+    anchors.left:imageButton.left
+    elide:Text.ElideMiddle
+    width:imageButton.width
+
+    MouseArea
+    {
+        id:textMA
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        hoverEnabled: true
+
+        onClicked:
+        {
+            choosedPhoto.open()
+        }
+    }
+}
     Button
     {
+        property url selectedImagePath:""
         id:imageButton
+
         anchors.horizontalCenter:parent.horizontalCenter
         anchors.top: imageButtonText.bottom
         anchors.topMargin: 15
         height:150
         width:250
+
+        hoverEnabled:true
+        clip:true
+        flat:true
+
+        background: Rectangle
+        {
+            anchors.fill:parent
+            color:"#142424"
+        }
+
+        Image {
+            id: addImage
+            source:imageButton.selectedImagePath!=""?imageButton.selectedImagePath
+                                                    :"images/addImage.png"
+            fillMode:Image.PreserveAspectFit
+            anchors.fill: parent
+        }
+        FileDialog
+        {
+            id:choosedPhoto
+            title:"Wybierz zdjęcie"
+            currentFolder:"C:/Users/kozik/Desktop"
+            nameFilters:[("*.png *.jpg *.jpeg")]
+
+            onAccepted:
+            {
+                imageButton.selectedImagePath=choosedPhoto.selectedFile
+            }
+        }
+        MouseArea
+        {
+            id:imageButtonMA
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape:Qt.PointingHandCursor
+
+            onClicked:
+            {
+                choosedPhoto.open()
+            }
+        }
     }
 
     //========================= IMAGE ===================================
@@ -198,7 +269,8 @@ Text
             color:"white"
             font.pixelSize: 18
             font.bold: true
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.left:parent.left
+            anchors.leftMargin: 20
             anchors.top: descriptionField.bottom
             anchors.topMargin:40
         }
@@ -348,5 +420,92 @@ Text
 
 
          //========================= KONTAKT ========================================
+
+        //========================= DODAJ OGŁ========================================
+
+Rectangle
+{
+    id: addButton
+    height: 35
+    width: parent.width - 45
+    radius: 5
+
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.bottom: background.bottom
+    anchors.bottomMargin: 10
+
+    color: addButtonMA.pressed ? "#d0d0d0" : (addButtonMA.containsMouse ? "#f2f2f2" : "white")
+
+    Text {
+        text: "Dodaj ogłoszenie"
+        anchors.centerIn: parent
+        font.bold: true
+        font.pixelSize: 15
+        color: "black"
+    }
+
+    MouseArea
+    {
+        id: addButtonMA
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+
+        onClicked: {
+            console.log("x")
+        }
+    }
+
+
+        }
+
+
+
+        //========================= DODAJ OGŁ ========================================
 }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
